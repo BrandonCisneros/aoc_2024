@@ -12,10 +12,12 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
+	"strings"
 )
 
-type List []int
+type List [2][]int
 
 func check(e error) {
 	if e != nil {
@@ -25,26 +27,45 @@ func check(e error) {
 
 func main() {
 
+	valList := parse()
+
+	fmt.Println("List: ", valList)
+
 }
 
-func parse() (List, List){
+func parse() List {
 
-	list_1 := List{}
-	list_2 := List{}
+	var valList List
 
 	data, err := os.Open("./_sample.txt")
 	check(err)
 
 	scanner := bufio.NewScanner(data)
 
-	for scanner.Scan(){
+	for scanner.Scan() {
 		line := scanner.Text()
 
-		fmt.printf()
+		//fmt.Println(line)
 
+		listLine := strings.Split(line, "   ")
 
+		fmt.Println(listLine[0])
+		//fmt.Println(listLine1[1])
+
+		for _, v := range listLine[0] {
+			fmt.Println("Value: ", string(v))
+			a := 1
+
+			valList[1][a] = int(v)
+
+			a++
+		}
+
+		for _, z := range listLine[1] {
+			fmt.Println("Z Value: ", string(z))
+		}
 
 	}
 
-	return list_1, list_2
+	return valList
 }
