@@ -14,10 +14,10 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
+	"strconv"
 	"strings"
 )
-
-type List [2][]int
 
 func check(e error) {
 	if e != nil {
@@ -27,15 +27,20 @@ func check(e error) {
 
 func main() {
 
-	valList := parse()
+	valList1, valList2 := parse()
+	valList1, valList2 = sorter(valList1, valList2)
 
-	fmt.Println("List: ", valList)
+	fmt.Println("List 1: ", valList1)
+	fmt.Println("List 2: ", valList2)
 
 }
 
-func parse() List {
+func parse() ([]int, []int) {
 
-	var valList List
+	a := 0
+
+	valList1 := []int{}
+	valList2 := []int{}
 
 	data, err := os.Open("./_sample.txt")
 	check(err)
@@ -49,23 +54,27 @@ func parse() List {
 
 		listLine := strings.Split(line, "   ")
 
-		fmt.Println(listLine[0])
-		//fmt.Println(listLine1[1])
+		fmt.Println("A Value: ", a)
+		fmt.Println("0 Value: ", listLine[0])
+		fmt.Println("1 Value: ", listLine[1])
 
-		for _, v := range listLine[0] {
-			fmt.Println("Value: ", string(v))
-			a := 1
+		fmt.Println("valList Position: ", valList1[1])
 
-			valList[1][a] = int(v)
+		valList1[a], err = strconv.Atoi(listLine[0])
+		valList2[a], err = strconv.Atoi(listLine[1])
+		check(err)
 
-			a++
-		}
-
-		for _, z := range listLine[1] {
-			fmt.Println("Z Value: ", string(z))
-		}
+		a++
 
 	}
 
-	return valList
+	return valList1, valList2
+}
+
+func sorter(valList1 []int, valList2 []int) ([]int, []int) {
+	list := [4]int{1, 2, 45, 5}
+
+	fmt.Println(slices.Sort(list))
+
+	return valList1, valList2
 }
