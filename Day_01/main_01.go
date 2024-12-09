@@ -14,13 +14,14 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
 
 func check(e error) {
 	if e != nil {
+		fmt.Println("There was an error!")
 		panic(e)
 	}
 }
@@ -37,8 +38,6 @@ func main() {
 
 func parse() ([]int, []int) {
 
-	a := 0
-
 	valList1 := []int{}
 	valList2 := []int{}
 
@@ -50,21 +49,15 @@ func parse() ([]int, []int) {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		//fmt.Println(line)
-
 		listLine := strings.Split(line, "   ")
 
-		fmt.Println("A Value: ", a)
-		fmt.Println("0 Value: ", listLine[0])
-		fmt.Println("1 Value: ", listLine[1])
-
-		fmt.Println("valList Position: ", valList1[1])
-
-		valList1[a], err = strconv.Atoi(listLine[0])
-		valList2[a], err = strconv.Atoi(listLine[1])
+		num0, err := strconv.Atoi(listLine[0])
+		check(err)
+		num1, err := strconv.Atoi(listLine[1])
 		check(err)
 
-		a++
+		valList1 = append(valList1, num0)
+		valList2 = append(valList2, num1)
 
 	}
 
@@ -72,9 +65,12 @@ func parse() ([]int, []int) {
 }
 
 func sorter(valList1 []int, valList2 []int) ([]int, []int) {
-	list := [4]int{1, 2, 45, 5}
 
-	fmt.Println(slices.Sort(list))
+	sort.Ints(valList1)
+	sort.Ints(valList2)
+
+	fmt.Println("This is from the sorter function: ", valList1)
+	fmt.Println("This is from the sorter function: ", valList2)
 
 	return valList1, valList2
 }
