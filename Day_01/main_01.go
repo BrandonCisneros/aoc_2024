@@ -28,11 +28,13 @@ func check(e error) {
 
 func main() {
 
+	totalDist := 0
+
 	valList1, valList2 := parse()
 	valList1, valList2 = sorter(valList1, valList2)
+	totalDist = addition(valList1, valList2)
 
-	fmt.Println("List 1: ", valList1)
-	fmt.Println("List 2: ", valList2)
+	fmt.Println(totalDist)
 
 }
 
@@ -41,7 +43,7 @@ func parse() ([]int, []int) {
 	valList1 := []int{}
 	valList2 := []int{}
 
-	data, err := os.Open("./_sample.txt")
+	data, err := os.Open("./_full-dataset.txt")
 	check(err)
 
 	scanner := bufio.NewScanner(data)
@@ -69,8 +71,27 @@ func sorter(valList1 []int, valList2 []int) ([]int, []int) {
 	sort.Ints(valList1)
 	sort.Ints(valList2)
 
-	fmt.Println("This is from the sorter function: ", valList1)
-	fmt.Println("This is from the sorter function: ", valList2)
-
 	return valList1, valList2
+}
+
+func addition(valList1 []int, valList2 []int) int {
+
+	a := 0
+	b := 0
+	c := 0
+
+	for _, v := range valList1 {
+
+		if v > valList2[a] {
+			b = v - valList2[a]
+		} else {
+			b = valList2[a] - v
+		}
+
+		c = b + c
+
+		a++
+	}
+
+	return c
 }
