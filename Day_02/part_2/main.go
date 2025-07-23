@@ -22,6 +22,7 @@ func main() {
 	scanner := bufio.NewScanner(data)
 
 	count := 0
+	zeroCount := 0
 	lineCount := 1
 
 	for scanner.Scan() {
@@ -54,11 +55,14 @@ func main() {
 			if verdict {
 				count++
 			}
+		case diff == 0:
+			zeroCount++
 		}
 
 	}
 
 	fmt.Println("Count: ", count)
+	println("zeroCount", zeroCount)
 }
 
 func asc(line []int) bool {
@@ -79,7 +83,12 @@ func asc(line []int) bool {
 			println(valList[i], " | ", valList[i+1])
 			continue
 		} else {
-			safe = false
+			switch correctionAsc(valList) {
+			case true:
+				return safe
+			case false:
+				safe = false
+			}
 		}
 
 	}
@@ -103,13 +112,74 @@ func desc(line []int) bool {
 		diff := valList[i] - valList[i+1]
 		//println("Diff: ", diff)
 
-		if valList[i] > valList[i+1] && diff <= 3 {
+		if valList[i] > valList[i+1] && diff >= 1 && diff <= 3 {
 			continue
 		} else {
-			safe = false
+			switch correctionDesc(valList) {
+			case true:
+				return safe
+			case false:
+				safe = false
+			}
 		}
 
 	}
 	println("desc safe:", safe)
+	return safe
+}
+
+func correctionAsc(line []int) bool {
+	println("Enterning correction function...")
+	safe := true
+	errCount := 0
+
+	for i := 0; i < int(len(line)-1); i++ {
+		//fmt.Println("ASC i: ", valList[i])
+
+		diff := line[i+1] - line[i]
+		//println("Diff: ", diff)
+
+		if line[i] < line[i+1] && diff >= 1 && diff <= 3 {
+			continue
+		} else {
+			errCount++
+			continue
+		}
+	}
+
+	if errCount > 1 {
+		safe = false
+	}
+
+	println("Error Count: ", errCount)
+
+	return safe
+}
+
+func correctionDesc(line []int) bool {
+	println("Enterning correction function...")
+	safe := true
+	errCount := 0
+
+	for i := 0; i < int(len(line)-1); i++ {
+		//fmt.Println("ASC i: ", valList[i])
+
+		diff := line[i] - line[i+1]
+		//println("Diff: ", diff)
+
+		if line[i] > line[i+1] && diff >= 1 && diff <= 3 {
+			continue
+		} else {
+			errCount++
+			continue
+		}
+	}
+
+	if errCount > 1 {
+		safe = false
+	}
+
+	println("Error Count: ", errCount)
+
 	return safe
 }
