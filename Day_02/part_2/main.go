@@ -70,6 +70,8 @@ func asc(line []int) bool {
 
 	safe := true
 	valList := line
+	pos := []int{}
+	errCount := 0
 
 	println("Line: ", line, " | valList: ", valList)
 
@@ -79,18 +81,20 @@ func asc(line []int) bool {
 		diff := valList[i+1] - valList[i]
 		println("Diff: ", diff)
 
-		if valList[i] < valList[i+1] && diff >= 1 && diff <= 3 {
+		if valList[i] < valList[i+1] {
 			println(valList[i], " | ", valList[i+1])
 			continue
 		} else {
-			switch correctionAsc(valList) {
-			case true:
-				return safe
-			case false:
-				safe = false
-			}
-		}
+			errCount++
+			pos = append(pos, i)
 
+		}
+		if diff >= 1 && diff <= 3 {
+			continue
+		} else {
+			errCount++
+			pos = append(pos, i)
+		}
 	}
 
 	fmt.Println("asc safe: ", safe)
@@ -115,71 +119,10 @@ func desc(line []int) bool {
 		if valList[i] > valList[i+1] && diff >= 1 && diff <= 3 {
 			continue
 		} else {
-			switch correctionDesc(valList) {
-			case true:
-				return safe
-			case false:
-				safe = false
-			}
+
 		}
 
 	}
 	println("desc safe:", safe)
-	return safe
-}
-
-func correctionAsc(line []int) bool {
-	println("Enterning correction function...")
-	safe := true
-	errCount := 0
-
-	for i := 0; i < int(len(line)-1); i++ {
-		//fmt.Println("ASC i: ", valList[i])
-
-		diff := line[i+1] - line[i]
-		//println("Diff: ", diff)
-
-		if line[i] < line[i+1] && diff >= 1 && diff <= 3 {
-			continue
-		} else {
-			errCount++
-			continue
-		}
-	}
-
-	if errCount > 1 {
-		safe = false
-	}
-
-	println("Error Count: ", errCount)
-
-	return safe
-}
-
-func correctionDesc(line []int) bool {
-	println("Enterning correction function...")
-	safe := true
-	errCount := 0
-
-	for i := 0; i < int(len(line)-1); i++ {
-		//fmt.Println("ASC i: ", valList[i])
-
-		diff := line[i] - line[i+1]
-		//println("Diff: ", diff)
-
-		if line[i] > line[i+1] && diff >= 1 && diff <= 3 {
-			continue
-		} else {
-			errCount++
-			continue
-		}
-	}
-
-	if errCount > 1 {
-		safe = false
-	}
-
-	println("Error Count: ", errCount)
-
 	return safe
 }
