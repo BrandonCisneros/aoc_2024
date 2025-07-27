@@ -17,12 +17,13 @@ func check(e error) {
 
 func main() {
 
-	data, err := os.Open("_full.txt")
+	go test()
+
+	data, err := os.Open("_sample2.txt")
 	check(err)
 	scanner := bufio.NewScanner(data)
 
 	count := 0
-	zeroCount := 0
 	lineCount := 1
 
 	for scanner.Scan() {
@@ -30,6 +31,7 @@ func main() {
 
 		valList := strings.Split(line, " ")
 		numList := []int{}
+		//badList := []int{}
 
 		for _, i := range valList {
 			i, err := strconv.Atoi(i)
@@ -56,45 +58,47 @@ func main() {
 				count++
 			}
 		case diff == 0:
-			zeroCount++
+			if numList[1] < numList[2] {
+				verdict := asc(numList)
+				if verdict {
+					count++
+				}
+			} else if numList[1] > numList[2] {
+				verdict := desc(numList)
+				if verdict {
+					count++
+
+				}
+			}
 		}
 
 	}
 
-	fmt.Println("Count: ", count)
-	println("zeroCount", zeroCount)
+	fmt.Println("Final Count: ", count)
 }
 
 func asc(line []int) bool {
-	println("Entered ASC function...")
+	fmt.Println("Entered ASC function...")
 
 	safe := true
 	valList := line
-	pos := []int{}
 	errCount := 0
 
-	println("Line: ", line, " | valList: ", valList)
+	//println("Line: ", line, " | valList: ", valList)
 
 	for i := 0; i < int(len(valList)-1); i++ {
-		fmt.Println("ASC i: ", valList[i])
+		fmt.Println("List: ", valList)
+		valList = append(valList[:i], valList[i+1:]...)
 
 		diff := valList[i+1] - valList[i]
-		println("Diff: ", diff)
 
-		if valList[i] < valList[i+1] {
-			println(valList[i], " | ", valList[i+1])
+		if valList[i] < valList[i+1] && diff >= 1 && diff <= 3 {
+			//println(valList[i], " | ", valList[i+1])
 			continue
 		} else {
 			errCount++
-			pos = append(pos, i)
+		}
 
-		}
-		if diff >= 1 && diff <= 3 {
-			continue
-		} else {
-			errCount++
-			pos = append(pos, i)
-		}
 	}
 
 	fmt.Println("asc safe: ", safe)
@@ -103,9 +107,8 @@ func asc(line []int) bool {
 }
 
 func desc(line []int) bool {
-	//fmt.Println("Entered DESC function...")
+	fmt.Println("Entered DESC function...")
 	safe := true
-
 	valList := line
 
 	//println("Line: ", line, " | valList: ", valList)
@@ -119,10 +122,11 @@ func desc(line []int) bool {
 		if valList[i] > valList[i+1] && diff >= 1 && diff <= 3 {
 			continue
 		} else {
-
+			safe = false
 		}
 
 	}
+
 	println("desc safe:", safe)
 	return safe
 }
