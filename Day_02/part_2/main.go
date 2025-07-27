@@ -17,21 +17,20 @@ func check(e error) {
 
 func main() {
 
-	go test()
-
 	data, err := os.Open("_sample2.txt")
 	check(err)
 	scanner := bufio.NewScanner(data)
 
 	count := 0
 	lineCount := 1
+	badList := [][]int{}
+	badCount := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		valList := strings.Split(line, " ")
 		numList := []int{}
-		//badList := []int{}
 
 		for _, i := range valList {
 			i, err := strconv.Atoi(i)
@@ -51,30 +50,49 @@ func main() {
 			verdict := asc(numList)
 			if verdict {
 				count++
+			} else {
+				badList = append(badList, numList)
 			}
 		case diff > 0:
 			verdict := desc(numList)
 			if verdict {
 				count++
+			} else {
+				badList = append(badList, numList)
 			}
 		case diff == 0:
 			if numList[1] < numList[2] {
 				verdict := asc(numList)
 				if verdict {
 					count++
+				} else {
+					badList = append(badList, numList)
 				}
 			} else if numList[1] > numList[2] {
 				verdict := desc(numList)
 				if verdict {
 					count++
-
+				} else {
+					badList = append(badList, numList)
 				}
 			}
 		}
 
 	}
 
-	fmt.Println("Final Count: ", count)
+	fmt.Println("Processing Bad List...")
+	for i := 0; i < len(badList); i++ {
+		fmt.Println("Bad List Line: ", badList[i])
+	}
+
+	if badFunc(badList) {
+		badCount++
+	}
+
+	fmt.Println("Normal Safe Count: ", count)
+	fmt.Println("Bad List Safe Count: ", badCount)
+
+	fmt.Println("Final Count: ", count+badCount)
 }
 
 func asc(line []int) bool {
@@ -82,13 +100,11 @@ func asc(line []int) bool {
 
 	safe := true
 	valList := line
-	errCount := 0
 
 	//println("Line: ", line, " | valList: ", valList)
 
 	for i := 0; i < int(len(valList)-1); i++ {
 		fmt.Println("List: ", valList)
-		valList = append(valList[:i], valList[i+1:]...)
 
 		diff := valList[i+1] - valList[i]
 
@@ -96,7 +112,7 @@ func asc(line []int) bool {
 			//println(valList[i], " | ", valList[i+1])
 			continue
 		} else {
-			errCount++
+			safe = false
 		}
 
 	}
@@ -114,7 +130,7 @@ func desc(line []int) bool {
 	//println("Line: ", line, " | valList: ", valList)
 
 	for i := 0; i < int(len(valList)-1); i++ {
-		//fmt.Println("ASC i: ", valList[i])
+		//fmt.Println("DESC Index Value: ", valList[i])
 
 		diff := valList[i] - valList[i+1]
 		//println("Diff: ", diff)
@@ -128,5 +144,21 @@ func desc(line []int) bool {
 	}
 
 	println("desc safe:", safe)
+	return safe
+}
+
+func badFunc(list [][]int) (safe bool) {
+	safe = false
+	//count := 0
+
+	for i := 0; i < len(list); i++ {
+		fmt.Println("The current value is", list[i])
+		line := list[i]
+		lineCopy := make([]int, len(line))
+		copy(lineCopy, line)
+		lineWrapper := append(lineCopy[:i], lineCopy[i+1:]...)
+		fmt.Println("And after it is removed, we get", lineWrapper)
+	}
+
 	return safe
 }
