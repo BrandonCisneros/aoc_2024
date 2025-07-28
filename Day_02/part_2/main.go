@@ -17,14 +17,12 @@ func check(e error) {
 
 func main() {
 
-	data, err := os.Open("_sample2.txt")
+	data, err := os.Open("_full.txt")
 	check(err)
 	scanner := bufio.NewScanner(data)
 
 	count := 0
 	lineCount := 1
-	badList := [][]int{}
-	badCount := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -50,71 +48,63 @@ func main() {
 			verdict := asc(numList)
 			if verdict {
 				count++
-			} else {
-				badList = append(badList, numList)
 			}
 		case diff > 0:
 			verdict := desc(numList)
 			if verdict {
 				count++
-			} else {
-				badList = append(badList, numList)
-			}
-		case diff == 0:
-			if numList[1] < numList[2] {
-				verdict := asc(numList)
-				if verdict {
-					count++
-				} else {
-					badList = append(badList, numList)
-				}
-			} else if numList[1] > numList[2] {
-				verdict := desc(numList)
-				if verdict {
-					count++
-				} else {
-					badList = append(badList, numList)
-				}
 			}
 		}
 
 	}
 
-	fmt.Println("Processing Bad List...")
-	for i := 0; i < len(badList); i++ {
-		fmt.Println("Bad List Line: ", badList[i])
-	}
-
-	if badFunc(badList) {
-		badCount++
-	}
-
-	fmt.Println("Normal Safe Count: ", count)
-	fmt.Println("Bad List Safe Count: ", badCount)
-
-	fmt.Println("Final Count: ", count+badCount)
+	fmt.Println("Count: ", count)
 }
 
 func asc(line []int) bool {
-	fmt.Println("Entered ASC function...")
+	println("Entered ASC function...")
 
 	safe := true
 	valList := line
+	badLevels := 0
 
-	//println("Line: ", line, " | valList: ", valList)
+	fmt.Println("Line: ", line, " | valList: ", valList)
 
-	for i := 0; i < int(len(valList)-1); i++ {
-		fmt.Println("List: ", valList)
+	for i := 1; i < int(len(valList)-1); i++ {
+		fmt.Println("ASC i: ", valList[i])
 
-		diff := valList[i+1] - valList[i]
+		diff := valList[i] - valList[i-1]
+		println("Diff: ", diff)
 
 		if valList[i] < valList[i+1] && diff >= 1 && diff <= 3 {
-			//println(valList[i], " | ", valList[i+1])
+			println(valList[i], " | ", valList[i+1])
 			continue
 		} else {
-			safe = false
-		}
+			fmt.Println("Processing Bad Lists...")
+			for i := 1; i < len(valList)-1; i++ {
+				line := valList
+				copyLine := make([]int, len(line))
+				copy(copyLine, line)
+				lineWrapper := append(copyLine[:i], copyLine[i+1:]...)
+				fmt.Println("Line Wrapper: ", lineWrapper)
 
+				diff := lineWrapper[i] - lineWrapper[i-1]
+				println("Diff: ", diff)
+
+				if lineWrapper[i] < lineWrapper[i+1] && diff >= 1 && diff <= 3 {
+					println(lineWrapper[i], " | ", lineWrapper[i+1])
+					continue
+				} else {
+					badLevels++
+				}
+
+			}
+		}
+	}
+
+	fmt.Println("Bad Levels: ", badLevels)
+	if badLevels > 1 {
+		safe = false
 	}
 
 	fmt.Println("asc safe: ", safe)
@@ -125,40 +115,24 @@ func asc(line []int) bool {
 func desc(line []int) bool {
 	fmt.Println("Entered DESC function...")
 	safe := true
+
 	valList := line
 
-	//println("Line: ", line, " | valList: ", valList)
+	fmt.Println("Line: ", line, " | valList: ", valList)
 
 	for i := 0; i < int(len(valList)-1); i++ {
-		//fmt.Println("DESC Index Value: ", valList[i])
+		//fmt.Println("ASC i: ", valList[i])
 
 		diff := valList[i] - valList[i+1]
 		//println("Diff: ", diff)
 
-		if valList[i] > valList[i+1] && diff >= 1 && diff <= 3 {
+		if valList[i] > valList[i+1] && diff <= 3 {
 			continue
 		} else {
 			safe = false
 		}
 
 	}
-
 	println("desc safe:", safe)
-	return safe
-}
-
-func badFunc(list [][]int) (safe bool) {
-	safe = false
-	//count := 0
-
-	for i := 0; i < len(list); i++ {
-		fmt.Println("The current value is", list[i])
-		line := list[i]
-		lineCopy := make([]int, len(line))
-		copy(lineCopy, line)
-		lineWrapper := append(lineCopy[:i], lineCopy[i+1:]...)
-		fmt.Println("And after it is removed, we get", lineWrapper)
-	}
-
 	return safe
 }
