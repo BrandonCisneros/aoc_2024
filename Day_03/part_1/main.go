@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func check(e error) {
@@ -18,6 +19,7 @@ func main() {
 	check(err)
 	scanner := bufio.NewScanner(data)
 	matchList := []string{}
+	intList := [][]int{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -26,19 +28,20 @@ func main() {
 		newLine := [][]string{}
 		newLine = append(newLine, match(line))
 
-		fmt.Println("String Match: ", newLine)
-
 		for i := 0; i < len(newLine); i++ {
 			fmt.Println("newLine i value: ", newLine[i])
-			for _, j := range newLine[i] {
-				fmt.Println("newLine j value: ", j)
-				matchList = append(matchList, j)
-			}
+			matchList = append(matchList, newLine[i]...)
 		}
 
 	}
 
-	fmt.Println("matchList", matchList)
+	for _, val := range matchList {
+		fmt.Println("matchList", val)
+		intPair := stringClean(val)
+		intList = append(intList, intPair)
+
+	}
+
 }
 
 func match(line string) []string {
@@ -51,4 +54,18 @@ func match(line string) []string {
 
 	fmt.Println("Matches: ", matches)
 	return matches
+}
+
+func stringClean(line string) []int {
+	fmt.Println("Original Line: ", line)
+	stringLine := strings.Split(line, "mul(")
+	fmt.Println("String Line First Pass: ", stringLine)
+	for _, val := range stringLine {
+		stringLine = strings.Split(val, ")")
+		fmt.Println("String Line Second Pass: ", stringLine)
+		stringLine = strings.Split(val, ",")
+		fmt.Println("String Line Final Pass: ", stringLine)
+	}
+
+	return []int{1}
 }
