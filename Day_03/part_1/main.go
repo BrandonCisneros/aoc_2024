@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -15,11 +16,12 @@ func check(e error) {
 }
 
 func main() {
-	data, err := os.Open("_sample.txt")
+	data, err := os.Open("_full.txt")
 	check(err)
 	scanner := bufio.NewScanner(data)
 	matchList := []string{}
 	intList := [][]int{}
+	answer := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -42,6 +44,16 @@ func main() {
 
 	}
 
+	fmt.Println("Int List: ", intList)
+
+	for _, ints := range intList {
+		product := ints[0] * ints[1]
+
+		answer = answer + product
+	}
+
+	fmt.Print("Answer: ", answer)
+
 }
 
 func match(line string) []string {
@@ -58,14 +70,29 @@ func match(line string) []string {
 
 func stringClean(line string) []int {
 	fmt.Println("Original Line: ", line)
+	intLine := []int{}
 	stringLine := strings.Split(line, "mul(")
 	fmt.Println("String Line First Pass: ", stringLine)
+
 	for _, val := range stringLine {
-		stringLine = strings.Split(val, ")")
-		fmt.Println("String Line Second Pass: ", stringLine)
+		val = strings.ReplaceAll(val, ")", "")
+		fmt.Println("String Line Second Pass: ", val)
 		stringLine = strings.Split(val, ",")
 		fmt.Println("String Line Final Pass: ", stringLine)
 	}
 
-	return []int{1}
+	for _, v := range stringLine {
+		fmt.Println("String Line Values", v)
+
+		intLine = append(intLine, intConv(v))
+	}
+
+	return intLine
+}
+
+func intConv(char string) int {
+	num, err := strconv.Atoi(char)
+	check(err)
+
+	return num
 }
