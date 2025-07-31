@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func check(e error) {
@@ -59,74 +60,59 @@ func parse() []string {
 // overlapping other words
 
 func processing(xmasSlice [][]string) int {
-	count := 0
-	mas := "MAS"
-	matrixSize := len(xmasSlice)   //--- sets the row (vertical) size for the matrix
-	sliceSize := len(xmasSlice[0]) //--- sets the element (horizontal) size of the matrix
+	lines := strings.Split(strings.TrimSpace(input), "\n")
+	grid := make([][]rune, len(lines))
+	output := 0
 
-	fmt.Println(mas, " | ", matrixSize, " | ", sliceSize)
+	for i, line := range lines {
+		grid[i] = []rune(line)
+	}
 
-	for i := 0; i < matrixSize; i++ {
-		for j := 0; j < sliceSize; j++ {
+	directions := [][2][2]int{
+		{
+			{-1, 1},
+			{1, -1},
+		},
+		{
+			{-1, -1},
+			{1, 1},
+		},
+	}
 
-			if xmasSlice[i][j] == "A" {
-				count += search(xmasSlice, i, j, mas)
+	for row := 0; row < len(grid); row++ {
+		for col := 0; col < len(grid[row]); col++ {
+
+			if grid[row][col] != 'A' {
+				continue
 			}
 
-			//count += search(xmasSlice, i, j, mas)
+			isXmas := true
 
-		}
-	}
+			for _, dir := range directions {
+				row1Index := row + dir[0][0]
+				col1Index := col + dir[0][1]
 
-	return count
-}
+				row2Index := row + dir[1][0]
+				col2Index := col + dir[1][1]
 
-func search(grid [][]string, row int, column int, mas string) int {
-	mSize := len(grid)
-	sSize := len(grid)
-	count := 0
+				if row1Index < 0 || row1Index >= len(grid) || col1Index < 0 || col1Index >= len(grid[row]) || row2Index < 0 || row2Index >= len(grid) || col2Index < 0 || col2Index >= len(grid[row]) {
+					isXmas = false
+					break
+				}
 
-	if grid[row][column] != string(mas[1]) {
-		return 0
-	}
+				if (grid[row1Index][col1Index] == 'M' && grid[row2Index][col2Index] == 'S') || (grid[row1Index][col1Index] == 'S' && grid[row2Index][col2Index] == 'M') {
+					continue
+				}
 
-	masLen := len(mas)
-
-	// Search coordinates to search all 8 directions starting from left to right
-	xCoords := []int{-1, -1, 1, 1}
-	yCoords := []int{-1, 1, -1, 1}
-
-	//This loop will search in all 8 directions
-	// one by one. It will return true if one of
-	// the directions contain the word.
-	for dir := 0; dir < 4; dir++ {
-
-		//initialize the starting point for current direction
-		charIndex := row + xCoords[dir]
-		currX := row + xCoords[dir]
-		currY := column + yCoords[dir]
-
-		//First character is already checked, match remaining characters
-		for charIndex = 1; charIndex < masLen; charIndex++ {
-
-			//Break if out of bounds
-			if currX >= mSize || currX < 0 || currY >= sSize || currY < 0 {
+				isXmas = false
 				break
 			}
 
-			if grid[currX][currY] != string(mas[charIndex]) {
-				break
+			if isXmas {
+				output++
 			}
-
-			// Moving in particular direction
-			currX += xCoords[dir]
-			currY += yCoords[dir]
-		}
-
-		if charIndex == masLen {
-			count++
 		}
 	}
 
-	return count
+	fmt.Println("Output Day 4 Part 2", output)
 }
